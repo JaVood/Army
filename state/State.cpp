@@ -3,7 +3,7 @@
 State::State(const char* title, int hitPoint, int damage) {
     this->title = title;
     this->hitPoint = hitPoint;
-    this->HitPointLimit = hitPointLimit;
+    this->hitPointLimit = hitPoint;
     this->damage = damage;
 }
 State::~State() {}
@@ -36,6 +36,7 @@ void State::addHitPoints(int hp) {
     int limit = this->hitPoint + hp;
     if ( limit > this->hitPointLimit ) {
         this->hitPoint = this->hitPointLimit;
+        return;
     }
     this->hitPoint = limit;
 }
@@ -45,12 +46,13 @@ void State::_takeDamage(int dmg) {
     
     if ( dmg > this->hitPoint ) {
         this->hitPoint = 0;
+        return;
     }
     this->hitPoint -= dmg;
 }
 
 void State::takeDamage(int dmg) {
-    this->_takeDamage(int dmg);
+    this->_takeDamage(dmg);
 }
 
 void State::_takeMagicDamage(int dmg) {
@@ -58,10 +60,11 @@ void State::_takeMagicDamage(int dmg) {
     
     if ( dmg > this->hitPoint ) {
         this->hitPoint = 0;
+        return;
     }
     this->hitPoint -= dmg;
 }
 
 void State::takeMagicDamage(int dmg) {
-    this->_takeMagicDamage(int dmg);
+    this->_takeMagicDamage(dmg);
 }
