@@ -1,7 +1,7 @@
 all: test.out
 
-test.out: main.o Soldier_test.o State.o Ability.o Unit.o Soldier.o
-	g++ -o test.out main.o Soldier_test.o State.o Ability.o Unit.o Soldier.o
+test.out: main.o Test.o State.o Ability.o RogueAbility.o VampireAbility.o Unit.o Soldier.o Rogue.o Berserker.o Vampire.o
+	g++ -o test.out main.o Test.o State.o Ability.o RogueAbility.o VampireAbility.o Unit.o Soldier.o Rogue.o Berserker.o Vampire.o
 
 State.o:
 	g++ -c ../State/State.cpp
@@ -9,14 +9,29 @@ State.o:
 Ability.o:
 	g++ -c ../Ability/Ability.cpp
 
+RogueAbility.o:
+	g++ -c ../Ability/RogueAbility.cpp
+
+VampireAbility.o:
+	g++ -c ../Ability/VampireAbility.cpp
+
 Unit.o:
 	g++ -c ../Unit/Unit.cpp
+
+Rogue.o:
+	g++ -c ../Unit/Rogue.cpp
 
 Soldier.o:
 	g++ -c ../Unit/Soldier.cpp
 
-Soldier_test.o:
-	g++ -std=c++11 -c Soldier_test.cpp
+Berserker.o:
+	g++ -c ../Unit/Berserker.cpp
+
+Vampire.o:
+	g++ -c ../Unit/Vampire.cpp
+
+Test.o:
+	g++ -std=c++11 -c Test.cpp
 
 main.o:
 	g++ -std=c++11 -c main.cpp

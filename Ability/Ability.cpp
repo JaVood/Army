@@ -13,3 +13,5 @@ void Ability::counterAttack(Unit* enemy) {
     this->owner->ensureIsAlive();
     enemy->takeDamage(this->owner->getDamage() / 2);
 }
+
+void Ability::hitPointDrain() {}

@@ -29,6 +29,7 @@ class Unit {
         virtual void takeMagicDamage(int dmg);
         virtual void attack(Unit* enemy);
         virtual void counterAttack(Unit* enemy);
+        virtual void hitPointDrain();
 };
 
 #endif // UNIT_H

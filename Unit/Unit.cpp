@@ -46,3 +46,7 @@ void Unit::attack(Unit* enemy) {
 void Unit::counterAttack(Unit* enemy) {
     this->ability->counterAttack(enemy);
 }
+
+void Unit::hitPointDrain() {
+    this->ability->hitPointDrain();
+}
