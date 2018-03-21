@@ -17,7 +17,7 @@ class State {
         void _takeMagicDamage(int dmg);
         
     public:
-        State(const char* title, int hitPoint, int manaPoint, int damage);
+        State(const char* title, int hitPoint, int damage, int manaPoint = 0);
         virtual ~State();
         
         void ensureIsAlive();

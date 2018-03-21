@@ -7,10 +7,10 @@ class Unit;
 
 class Ability {
     protected:
-        Unit* master;
-        
+        Unit* owner;
+
     public:
-        Ability(Unit* master);
+        Ability(Unit* owner);
         virtual ~Ability();
         
         virtual void attack(Unit* enemy);

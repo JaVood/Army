@@ -1,16 +1,15 @@
 #include "Ability.h"
 
-Ability::Ability(Unit* master): master(master) {}
+Ability::Ability(Unit* owner): owner(owner) {}
 Ability::~Ability() {}
 
 void Ability::attack(Unit* enemy) {
-    this->master->ensureIsAlive();
-    enemy->takeDamage(this->master->getDamage());
-    enemy->counterAttack(this->master);
+    this->owner->ensureIsAlive();
+    enemy->takeDamage(this->owner->getDamage());
+    enemy->counterAttack(this->owner);
 }
 
 void Ability::counterAttack(Unit* enemy) {
-    this->master->ensureIsAlive();
-    enemy->takeDamage(this->master->getDamage()/2);
-    
+    this->owner->ensureIsAlive();
+    enemy->takeDamage(this->owner->getDamage() / 2);
 }

@@ -3,7 +3,7 @@
 #include "catch.hpp"
 
 TEST_CASE( "Test State class" ) {
-    State* state = new State("State", 150,100, 10);
+    State* state = new State("State", 150,10, 100);
 
     REQUIRE( state->getTitle() == "State" );
     REQUIRE( state->getHitPoint() == 150 );
@@ -77,7 +77,7 @@ TEST_CASE( "Test State class" ) {
 }
 
 TEST_CASE( "Test Unit class" ) {
-    Unit* unit = new Unit("Unit", 150, 0, 10);
+    Unit* unit = new Unit("Unit", 150, 10);
 
     REQUIRE( unit->getTitle() == "Unit" );
     REQUIRE( unit->getHitPoint() == 150 );
@@ -117,7 +117,7 @@ TEST_CASE( "Test Unit class" ) {
 }
 
 TEST_CASE( "Test Ability class" ) {
-    Unit* unit = new Unit("Unit", 150, 0, 10);
+    Unit* unit = new Unit("Unit", 150, 10);
 
     REQUIRE( unit->getTitle() == "Unit" );
     REQUIRE( unit->getHitPoint() == 150 );
@@ -125,7 +125,7 @@ TEST_CASE( "Test Ability class" ) {
     REQUIRE( unit->getDamage() == 10 );
     
     SECTION( "Ability::attack tests" ) {
-        Unit* enemy = new Unit("Enemy", 150, 0, 10);
+        Unit* enemy = new Unit("Enemy", 150, 10);
         
         REQUIRE( enemy->getTitle() == "Enemy" );
         REQUIRE( enemy->getHitPoint() == 150 );

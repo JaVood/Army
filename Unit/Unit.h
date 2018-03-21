@@ -12,7 +12,7 @@ class Unit {
         Ability* ability;
         
     public:
-        Unit(const char* title, int hitPoint, int manaPoint, int damage);
+        Unit(const char* title, int hitPoint, int damage, int manaPoint = 0);
         virtual~Unit();
         
         void ensureIsAlive();

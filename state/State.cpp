@@ -1,6 +1,6 @@
 #include "State.h"
 
-State::State(const char* title, int hitPoint, int manaPoint, int damage) {
+State::State(const char* title, int hitPoint, int damage, int manaPoint) {
     this->title = title;
     this->hitPoint = hitPoint;
     this->manaPoint = manaPoint;

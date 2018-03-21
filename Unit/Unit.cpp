@@ -1,7 +1,7 @@
 #include "Unit.h"
 
-Unit::Unit(const char* title, int hitPoint,int manaPoint, int damage) 
-    : state(new State(title, hitPoint, manaPoint, damage)) {}
+Unit::Unit(const char* title, int hitPoint, int damage, int manaPoint) 
+    : state(new State(title, hitPoint, damage, manaPoint)) {}
     
 Unit::~Unit() {
     delete(this->state);
