@@ -36,4 +36,4 @@ class State {
         void takeMagicDamage(int dmg);
 };
 
-#endif // STATE_h
+#endif // STATE_H
