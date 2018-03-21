@@ -50,3 +50,27 @@ void Unit::counterAttack(Unit* enemy) {
 void Unit::hitPointDrain() {
     this->ability->hitPointDrain();
 }
+
+void Unit::setName(const char* title) {
+    this->state->setName(title);
+}
+
+void Unit::setHitPoint(int hp) {
+    this->state->setHitPoint(hp);
+}
+
+void Unit::setManaPoint(int mp) {
+    this->state->setManaPoint(mp);
+}
+
+void Unit::setDamage(int dmg) {
+    this->state->setDamage(dmg);
+}
+
+void Unit::setHitPointLimit(int hp) {
+    this->state->setHitPointLimit(hp);
+}
+
+void Unit::setManaPointLimit(int mp) {
+    this->state->setManaPointLimit(mp);
+}

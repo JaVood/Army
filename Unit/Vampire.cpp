@@ -1,7 +1,7 @@
 #include "Vampire.h"
 
-Vampire::Vampire(const char* title, int hitPoints, int damage): 
-    Unit(title, hitPoints, damage) {
+Vampire::Vampire(const char* title, int hitPoint, int damage): 
+    Unit(title, hitPoint, damage) {
         this->ability = new VampireAbility(this);
     }
 

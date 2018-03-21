@@ -34,6 +34,12 @@ class State {
         void spendManaPoint(int mp);
         void takeDamage(int dmg);
         void takeMagicDamage(int dmg);
+        void setName(const char* title);
+        void setHitPoint(int hp);
+        void setManaPoint(int mp);
+        void setDamage(int dmg);
+        void setHitPointLimit(int hp);
+        void setManaPointLimit(int mp);
 };
 
 #endif // STATE_H

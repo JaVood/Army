@@ -9,7 +9,7 @@
 
 class Berserker : public Unit {
     public:
-        Berserker(const char* title, int hitPoints = BERSERKER_HIT_POINT, int damage = BERSERKER_DAMAGE);
+        Berserker(const char* title, int hitPoint = BERSERKER_HIT_POINT, int damage = BERSERKER_DAMAGE);
         virtual ~Berserker();
         
         virtual void takeMagicDamage(int dmg);

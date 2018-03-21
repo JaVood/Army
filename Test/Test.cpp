@@ -4,10 +4,11 @@
 #include "../Unit/Soldier.h"
 #include "../Unit/Berserker.h"
 #include "../Unit/Vampire.h"
+#include "../Unit/Werewolf.h"
 #include "catch.hpp"
 
 TEST_CASE( "Test State class" ) {
-    State* state = new State("State", 150,10, 100);
+    State* state = new State("State", 150, 10, 100);
 
     REQUIRE( state->getTitle() == "State" );
     REQUIRE( state->getHitPoint() == 150 );
@@ -617,5 +618,115 @@ TEST_CASE( "Test Vampire class" ) {
         vampire->takeDamage(6000);
 
         REQUIRE( vampire->getHitPoint() == 0 );
+    }
+}
+
+TEST_CASE( "Test Werewolf class" ) {
+    Werewolf* werewolf = new Werewolf("Werewolf");
+
+    REQUIRE( werewolf->getTitle() == "Werewolf" );
+    REQUIRE( werewolf->getHitPoint() == 900 );
+    REQUIRE( werewolf->getHitPointLimit() == 900 );
+    REQUIRE( werewolf->getDamage() == 100 );
+    
+    SECTION( "Werewolf::takeDamage tests" ) {
+        werewolf->takeDamage(50);
+        REQUIRE( werewolf->getHitPoint() == 850 );
+
+        werewolf->takeDamage(40);
+        REQUIRE( werewolf->getHitPoint() == 810 );
+
+        werewolf->takeDamage(10);
+        REQUIRE( werewolf->getHitPoint() == 800 );
+
+        werewolf->takeDamage(10);
+        REQUIRE( werewolf->getHitPoint() == 790 );
+        
+        werewolf->takeDamage(1000);
+        REQUIRE( werewolf->getHitPoint() == 0 );
+    }
+    
+    SECTION( "Werewolf::addHP tests" ) {
+        werewolf->takeDamage(50);
+        REQUIRE( werewolf->getHitPoint() == 850 );
+
+        werewolf->addHitPoint(40);
+        REQUIRE( werewolf->getHitPoint() == 890 );
+
+        werewolf->addHitPoint(10);
+        REQUIRE( werewolf->getHitPoint() == 900 );
+
+        werewolf->addHitPoint(10);
+        REQUIRE( werewolf->getHitPoint() == 900 );
+    }
+    
+    SECTION( "Werewolf::takeMagicDamage tests" ) {
+        
+        werewolf->takeMagicDamage(50);
+        REQUIRE( werewolf->getHitPoint() == 900 - 50 );
+        werewolf->takeMagicDamage(50);
+        REQUIRE( werewolf->getHitPoint() == 900 - 50 - 50 );
+        werewolf->takeMagicDamage(50);
+        REQUIRE( werewolf->getHitPoint() == 900 - 50 - 50 - 50 );
+        werewolf->takeMagicDamage(50);
+        REQUIRE( werewolf->getHitPoint() == 900 - 50 - 50 - 100 );
+        werewolf->takeMagicDamage(50);
+        REQUIRE( werewolf->getHitPoint() == 900 - 50 - 50 - 150);
+    }
+    SECTION( "Werewolf::set tests" ) {
+        
+        werewolf->setName("Doggy");
+        REQUIRE( werewolf->getTitle() == "Doggy" );
+        werewolf->setDamage(50);
+        REQUIRE( werewolf->getDamage() == 50 );
+        werewolf->setHitPoint(50);
+        REQUIRE( werewolf->getHitPoint() == 50 );
+        REQUIRE( werewolf->getHitPointLimit() == 900);
+        werewolf->setHitPointLimit(70);
+        REQUIRE( werewolf->getHitPointLimit() == 70);
+    }
+    
+    SECTION( "Werewolf::transform tests" ) {
+        
+        werewolf->transform();
+        REQUIRE( werewolf->getTitle() == "Wolf" );
+        REQUIRE( werewolf->getHitPoint() == 900 );
+        REQUIRE( werewolf->getHitPointLimit() == 1300 );
+        REQUIRE( werewolf->getDamage() == 200 );
+        
+        werewolf->takeDamage(50);
+        REQUIRE( werewolf->getHitPoint() == 850 );
+
+        werewolf->takeDamage(40);
+        REQUIRE( werewolf->getHitPoint() == 810 );
+
+        werewolf->takeDamage(10);
+        REQUIRE( werewolf->getHitPoint() == 800 );
+
+        werewolf->takeDamage(10);
+        REQUIRE( werewolf->getHitPoint() == 790 );
+        
+        werewolf->takeDamage(50);
+        REQUIRE( werewolf->getHitPoint() == 740 );
+
+        werewolf->addHitPoint(40);
+        REQUIRE( werewolf->getHitPoint() == 780 );
+
+        werewolf->addHitPoint(10);
+        REQUIRE( werewolf->getHitPoint() == 790 );
+
+        werewolf->addHitPoint(1000);
+        REQUIRE( werewolf->getHitPoint() == 1300 );
+        
+        werewolf->takeMagicDamage(450);
+        REQUIRE( werewolf->getHitPoint() == 900 - 50 );
+        werewolf->takeMagicDamage(50);
+        REQUIRE( werewolf->getHitPoint() == 900 - 50 - 50 );
+        werewolf->takeMagicDamage(50);
+        REQUIRE( werewolf->getHitPoint() == 900 - 50 - 50 - 50 );
+        werewolf->takeMagicDamage(50);
+        REQUIRE( werewolf->getHitPoint() == 900 - 50 - 50 - 100 );
+        werewolf->takeMagicDamage(50);
+        REQUIRE( werewolf->getHitPoint() == 900 - 50 - 50 - 150);
     }
 }

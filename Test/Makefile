@@ -1,11 +1,11 @@
 all: test.out
 
-test.out: main.o Test.o State.o Ability.o RogueAbility.o VampireAbility.o Unit.o Soldier.o Rogue.o Berserker.o Vampire.o
-	g++ -o test.out main.o Test.o State.o Ability.o RogueAbility.o VampireAbility.o Unit.o Soldier.o Rogue.o Berserker.o Vampire.o
+test.out: main.o Test.o State.o Ability.o RogueAbility.o VampireAbility.o Unit.o Soldier.o Rogue.o Berserker.o Vampire.o Werewolf.o
+	g++ -o test.out main.o Test.o State.o Ability.o RogueAbility.o VampireAbility.o Unit.o Soldier.o Rogue.o Berserker.o Vampire.o Werewolf.o
 
 State.o:
 	g++ -c ../State/State.cpp
-
+	
 Ability.o:
 	g++ -c ../Ability/Ability.cpp
 
@@ -29,6 +29,9 @@ Berserker.o:
 
 Vampire.o:
 	g++ -c ../Unit/Vampire.cpp
+
+Werewolf.o:
+	g++ -c ../Unit/Werewolf.cpp
 
 Test.o:
 	g++ -std=c++11 -c Test.cpp

@@ -9,7 +9,7 @@
 
 class Soldier : public Unit {
     public:
-        Soldier(const char* title, int hitPoints = SOLDIER_HIT_POINT, int damage = SOLDIER_DAMAGE);
+        Soldier(const char* title, int hitPoint = SOLDIER_HIT_POINT, int damage = SOLDIER_DAMAGE);
         virtual ~Soldier();
 };
 

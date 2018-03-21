@@ -99,3 +99,30 @@ void State::_takeMagicDamage(int dmg) {
 void State::takeMagicDamage(int dmg) {
     this->_takeMagicDamage(dmg);
 }
+
+void State::setName(const char* title){
+    this->title = title;
+}
+
+void State::setHitPoint(int hp) {
+    this->hitPoint = hp;
+}
+
+void State::setManaPoint(int mp) {
+    this->manaPoint = mp;
+}
+
+void State::setDamage(int dmg) {
+    this->damage = dmg;
+}
+
+void State::setHitPointLimit(int hp) {
+    this->hitPointLimit = hp;
+    if ( this->hitPoint > this->hitPointLimit) {
+        this->setHitPoint(this->hitPointLimit);
+    }
+}
+
+void State::setManaPointLimit(int mp) {
+    this->manaPointLimit = mp;
+}

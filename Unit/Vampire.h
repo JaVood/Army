@@ -9,7 +9,7 @@
 
 class Vampire : public Unit {
     public:
-        Vampire(const char* title, int hitPoints = VAMPIRE_HIT_POINT, int damage = VAMPIRE_DAMAGE);
+        Vampire(const char* title, int hitPoint = VAMPIRE_HIT_POINT, int damage = VAMPIRE_DAMAGE);
         virtual ~Vampire();
 };
 
