@@ -22,6 +22,7 @@ int Unit::getHitPoint() const {
 int Unit::getHitPointLimit() const {
     return this->state->getHitPointLimit();
 }
+
 int Unit::getDamage() const {
     return this->state->getDamage();
 }
@@ -59,18 +60,10 @@ void Unit::setHitPoint(int hp) {
     this->state->setHitPoint(hp);
 }
 
-void Unit::setManaPoint(int mp) {
-    this->state->setManaPoint(mp);
-}
-
 void Unit::setDamage(int dmg) {
     this->state->setDamage(dmg);
 }
 
 void Unit::setHitPointLimit(int hp) {
     this->state->setHitPointLimit(hp);
-}
-
-void Unit::setManaPointLimit(int mp) {
-    this->state->setManaPointLimit(mp);
 }

@@ -48,37 +48,6 @@ TEST_CASE( "Test State class" ) {
         state->addHitPoint(10);
         REQUIRE( state->getHitPoint() == 150 );
     }
-    
-    SECTION( "State::Spend mana tests" ) {
-        state->spendManaPoint(5);
-        REQUIRE( state->getManaPoint() == 100-5 );
-
-        state->spendManaPoint(10);
-        REQUIRE( state->getManaPoint() == 100-5-10 );
-
-        state->spendManaPoint(20);
-        REQUIRE( state->getManaPoint() == 100-5-10-20 );
-
-        state->spendManaPoint(11);
-        REQUIRE( state->getManaPoint() == 100-5-10-20-11 );
-        
-        state->spendManaPoint(100);
-        REQUIRE( state->getManaPoint() == 0 );
-    }
-    
-    SECTION( "State::addMana tests" ) {
-        state->spendManaPoint(80);
-        REQUIRE( state->getManaPoint() == 100-80 );
-
-        state->addManaPoint(20);
-        REQUIRE( state->getManaPoint() == 100-80+20 );
-
-        state->addManaPoint(20);
-        REQUIRE( state->getManaPoint() == 100-80+20+20 );
-
-        state->addManaPoint(100);
-        REQUIRE( state->getManaPoint() == 100 );
-    }
 }
 
 TEST_CASE( "Test Unit class" ) {

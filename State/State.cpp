@@ -40,6 +40,12 @@ int State::getDamage() const {
     return this->damage;
 }
 
+void State::spendMana(int mp) {
+    this->ensureIsAlive();
+    
+    this->manaPoint -= mp;
+}
+
 void State::addHitPoint(int hp) {
     this->ensureIsAlive();
     
@@ -60,16 +66,6 @@ void State::addManaPoint(int mp) {
         return;
     }
     this->manaPoint = limit;
-}
-
-void State::spendManaPoint(int mp) {
-    this->ensureIsAlive();
-    
-    if ( mp > this->manaPoint ) {
-        this->manaPoint = 0;
-        return;
-    }
-    this->manaPoint -= mp;
 }
 
 void State::_takeDamage(int dmg) {

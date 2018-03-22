@@ -32,10 +32,8 @@ class Unit {
         virtual void hitPointDrain();
         virtual void setHitPoint(int hp);
         virtual void setName(const char* title);
-        virtual void setManaPoint(int mp);
         virtual void setDamage(int dmg);
         virtual void setHitPointLimit(int hp);
-        virtual void setManaPointLimit(int mp);
 };
 
 #endif // UNIT_H

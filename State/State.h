@@ -31,9 +31,9 @@ class State {
         
         void addHitPoint(int hp);
         void addManaPoint(int mp);
-        void spendManaPoint(int mp);
         void takeDamage(int dmg);
         void takeMagicDamage(int dmg);
+        void spendMana(int mp);
         void setName(const char* title);
         void setHitPoint(int hp);
         void setManaPoint(int mp);
