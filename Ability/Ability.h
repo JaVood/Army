@@ -2,7 +2,6 @@
 #define ABILITY_H
 
 #include "../Unit/Unit.h"
-#include "../SpellCaster/SpellCaster.h"
 
 class Unit;
 

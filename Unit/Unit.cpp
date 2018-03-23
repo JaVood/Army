@@ -1,7 +1,7 @@
 #include "Unit.h"
 
-Unit::Unit(const char* title, int hitPoint, int damage, int manaPoint) 
-    : state(new State(title, hitPoint, damage, manaPoint)) {}
+Unit::Unit(const char* title, const char* unitType, int hitPoint, int damage, int manaPoint,  const char* magicType) 
+    : state(new State(title, unitType, hitPoint, damage, manaPoint, magicType)) {}
     
 Unit::~Unit() {
     delete(this->state);
@@ -14,6 +14,10 @@ void Unit::ensureIsAlive() {
 
 const char* Unit::getTitle() const {
     return this->state->getTitle();
+}
+
+const char* Unit::getUnitType() const {
+    return this->state->getUnitType();
 }
 
 int Unit::getHitPoint() const {
@@ -54,6 +58,10 @@ void Unit::hitPointDrain() {
 
 void Unit::setName(const char* title) {
     this->state->setName(title);
+}
+
+void Unit::setUnitType(const char* unitType) {
+    this->state->setUnitType(unitType);
 }
 
 void Unit::setHitPoint(int hp) {

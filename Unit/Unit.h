@@ -12,12 +12,13 @@ class Unit {
         Ability* ability;
         
     public:
-        Unit(const char* title, int hitPoint, int damage, int manaPoint = 0);
+        Unit(const char* title, const char* unitType, int hitPoint, int damage, int manaPoint = 0,  const char* magicType = 0);
         virtual~Unit();
         
         void ensureIsAlive();
 
         const char* getTitle() const;
+        const char* getUnitType() const;
         int getHitPoint() const;
         int getHitPointLimit() const;
         int getDamage() const;
@@ -32,6 +33,7 @@ class Unit {
         virtual void hitPointDrain();
         virtual void setHitPoint(int hp);
         virtual void setName(const char* title);
+        virtual void setUnitType(const char* unitType);
         virtual void setDamage(int dmg);
         virtual void setHitPointLimit(int hp);
 };

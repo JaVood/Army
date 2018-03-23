@@ -1,7 +1,7 @@
 #include "Werewolf.h"
 
-Werewolf::Werewolf(const char* title, int hitPoint, int damage): 
-    Unit(title, hitPoint, damage) {
+Werewolf::Werewolf(const char* title, const char* unitType, int hitPoint, int damage): 
+    Unit(title, unitType, hitPoint, damage) {
         this->ability = new Ability(this);
     }
 

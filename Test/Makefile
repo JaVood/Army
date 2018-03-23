@@ -1,7 +1,7 @@
 all: test.out
 
-test.out: main.o Test.o State.o Ability.o RogueAbility.o VampireAbility.o Unit.o Soldier.o Rogue.o Berserker.o Vampire.o Werewolf.o
-	g++ -o test.out main.o Test.o State.o Ability.o RogueAbility.o VampireAbility.o Unit.o Soldier.o Rogue.o Berserker.o Vampire.o Werewolf.o
+test.out: main.o Test.o State.o Ability.o RogueAbility.o VampireAbility.o PriestAbility.o Unit.o Soldier.o Rogue.o Berserker.o Vampire.o Werewolf.o SpellCaster.o Wizard.o Vortex.o BattleHeal.o Healer.o Priest.o
+	g++ -o test.out main.o Test.o State.o Ability.o RogueAbility.o VampireAbility.o PriestAbility.o Unit.o Soldier.o Rogue.o Berserker.o Vampire.o Werewolf.o SpellCaster.o Wizard.o Vortex.o BattleHeal.o Healer.o Priest.o
 
 State.o:
 	g++ -c ../State/State.cpp
@@ -14,6 +14,9 @@ RogueAbility.o:
 
 VampireAbility.o:
 	g++ -c ../Ability/VampireAbility.cpp
+
+PriestAbility.o:
+	g++ -c ../Ability/PriestAbility.cpp
 
 Unit.o:
 	g++ -c ../Unit/Unit.cpp
@@ -32,6 +35,24 @@ Vampire.o:
 
 Werewolf.o:
 	g++ -c ../Unit/Werewolf.cpp
+
+SpellCaster.o:
+	g++ -c ../SpellCaster/SpellCaster.cpp
+
+Wizard.o:
+	g++ -c ../SpellCaster/Wizard.cpp
+
+Healer.o:
+	g++ -c ../SpellCaster/Healer.cpp
+
+Priest.o:
+	g++ -c ../SpellCaster/Priest.cpp
+
+Vortex.o:
+	g++ -c ../Spell/Vortex.cpp
+
+BattleHeal.o:
+	g++ -c ../Spell/BattleHeal.cpp
 
 Test.o:
 	g++ -std=c++11 -c Test.cpp

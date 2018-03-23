@@ -1,7 +1,9 @@
 #include "State.h"
 
-State::State(const char* title, int hitPoint, int damage, int manaPoint) {
+State::State(const char* title, const char* unitType, int hitPoint, int damage, int manaPoint,  const char* magicType) {
     this->title = title;
+    this->unitType = unitType;
+    this->magicType = magicType;
     this->hitPoint = hitPoint;
     this->manaPoint = manaPoint;
     this->manaPointLimit = manaPoint;
@@ -18,6 +20,14 @@ void State::ensureIsAlive() {
 
 const char* State::getTitle() const {
     return this->title;
+}
+
+const char* State::getUnitType() const {
+    return this->unitType;
+}
+
+const char* State::getMagicType() const {
+    return this->magicType;
 }
 
 int State::getHitPoint() const {
@@ -98,6 +108,10 @@ void State::takeMagicDamage(int dmg) {
 
 void State::setName(const char* title){
     this->title = title;
+}
+
+void State::setUnitType(const char* unitType){
+    this->unitType = unitType;
 }
 
 void State::setHitPoint(int hp) {

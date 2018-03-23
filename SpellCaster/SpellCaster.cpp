@@ -1,10 +1,10 @@
 #include "SpellCaster.h"
 
-SpellCaster::SpellCaster(const char* title, int hitPoint, int damage, int manaPoint) : Unit(title, hitPoint, damage, manaPoint) {}
-    
-SpellCaster::~SpellCaster() {
-    delete(this->spell);
+SpellCaster::SpellCaster(const char* title, const char* unitType, int hitPoint, int damage, int manaPoint, const char* magicType) : Unit(title, unitType, hitPoint, damage, manaPoint, magicType) {
+    this->ability = new Ability(this);
 }
+    
+SpellCaster::~SpellCaster() {}
 
 int SpellCaster::getManaPoint() const {
     return this->state->getManaPoint();
@@ -30,18 +30,10 @@ void SpellCaster::spendMana(int mp) {
     this->state->spendMana(mp);
 }
 
-void SpellCaster::useSpell(Unit* unit) {
-    this->spell->useSpell(Unit* unit);
+const char* SpellCaster::getMagicType() const {
+    return this->state->getMagicType();
 }
 
-void SpellCaster::vortex(Unit* enemy, int dmg) {
-    this->spell->vortex(Unit* enemy, int dmg);
-}
+void SpellCaster::heal(Unit* patient) {}
 
-void SpellCaster::battleHeal(Unit* friend, int power) {
-    this->spell->vortex(Unit* friend, int power);
-}
-
-void SpellCaster::summonDemon() {
-    this->spell->summonDemon();
-}
+void SpellCaster::useBattleSpell(Unit* enemy) {}
