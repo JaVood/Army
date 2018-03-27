@@ -1,7 +1,7 @@
 #include "Rogue.h"
 
-Rogue::Rogue(const char* title, const char* unitType, int hitPoint, int damage): 
-    Unit(title, unitType, hitPoint, damage) {
+Rogue::Rogue(const char* title, int hitPoint, int damage): 
+    Unit(title, hitPoint, damage) {
         this->ability = new RogueAbility(this);
     }
 

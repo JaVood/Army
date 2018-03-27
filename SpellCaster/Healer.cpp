@@ -1,15 +1,7 @@
 #include "Healer.h"
 
-Healer::Healer(const char* title, const char* unitType, int hitPoint, int damage, int manaPoint, const char* magicType) : SpellCaster(title, unitType, hitPoint, damage, manaPoint, magicType) {
+Healer::Healer(const char* title, int hitPoint, int damage, int manaPoint) : SpellCaster(title, hitPoint, damage, manaPoint, false) {
     this->ability = new Ability(this);
     }
 
 Healer::~Healer() {}
-
-void Healer::heal(Unit* patient) {
-    this->battleHeal = new BattleHeal(this, patient);
-}
-
-void Healer::useBattleSpell(Unit* enemy) {
-    this->vortex = new Vortex(this, enemy);
-}

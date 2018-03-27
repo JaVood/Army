@@ -1,18 +1,20 @@
-#ifndef VORTEX
-#define VORTEX
+#ifndef VORTEX_H
+#define VORTEX_H
 
-#include "../Unit/Unit.h"
+#include "Spell.h"
 #include "../SpellCaster/SpellCaster.h"
 
-#define MAGIC_DAMAGE 200
-#define MANA_VORTEX_COST 50
+class SpellCaster;
 
-class Vortex {
+class Vortex : public Spell {
+    protected:
+        void priestCast(SpellCaster* caster, Unit* enemy, Spell* spell);
+        void necromanserCast(SpellCaster* caster, Unit* enemy, Spell* spell);
     public:
-        Vortex(SpellCaster* unit, Unit* enemy);
-        ~Vortex();
+        Vortex(std::string spellName="Vortex", int manaCost=50, int actionsPoints=200);
+        virtual ~Vortex();
 
-        void magicAttack(SpellCaster* unit, Unit* enemy);
+        virtual void cast(SpellCaster* caster, Unit* enemy, Spell* spell);
 };
 
-#endif // VORTEX
+#endif // VORTEX_H

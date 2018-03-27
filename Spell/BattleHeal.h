@@ -1,18 +1,16 @@
-#ifndef BATTLE_HEAL
-#define BATTLE_HEAL
+#ifndef BATTLE_HEAL_H
+#define BATTLE_HEAL_H
 
-#include "../Unit/Unit.h"
+#include "Spell.h"
 #include "../SpellCaster/SpellCaster.h"
 
-#define HEAL 100
-#define MANA_BATTLE_HEAL_COST 30
+class SpellCaster;
 
-class BattleHeal {
+class BattleHeal : public Spell {
     public:
-        BattleHeal(SpellCaster* unit, Unit* patient);
-        ~BattleHeal();
+        BattleHeal(std::string spellName="BattleHeal", int manaCost=30, int actionsPoints=100);
+        virtual ~BattleHeal();
 
-        void heal(SpellCaster* unit, Unit* patient);
+        virtual void cast(SpellCaster* caster, Unit* other, Spell* spell);
 };
-
-#endif // BATTLE_HEAL
+#endif // BATTLE_HEAL_H

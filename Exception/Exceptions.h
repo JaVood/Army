@@ -3,5 +3,7 @@
 
 class OutOfHitPointsException {};
 class OutOfManaException {};
+class CantTurnThisUnitException {};
+class UnitCantAttackHisOwnerException {};
 
 #endif // EXCEPTIONS_H

@@ -8,7 +8,7 @@ class RogueAbility : public Ability {
         RogueAbility(Unit* owner);
         virtual ~RogueAbility();
         
-        virtual void attack(Unit* enemy);
+        virtual void attack(Unit* owner, Unit* enemy);
 };
 
 

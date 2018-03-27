@@ -5,16 +5,17 @@
 #include "../Unit/Berserker.h"
 #include "../Unit/Vampire.h"
 #include "../Unit/Werewolf.h"
+#include "../Unit/Demon.h"
 #include "../SpellCaster/SpellCaster.h"
 #include "../SpellCaster/Wizard.h"
 #include "../SpellCaster/Healer.h"
 #include "../SpellCaster/Priest.h"
-#include "../Spell/Vortex.h"
-#include "../Spell/BattleHeal.h"
+#include "../SpellCaster/Warlock.h"
+#include "../SpellCaster/Necromancer.h"
 #include "catch.hpp"
 
 TEST_CASE( "Test State class" ) {
-    State* state = new State("State", "Alive", 150, 10, 100);
+    State* state = new State("State", 150, 10, 100);
 
     REQUIRE( state->getTitle() == "State" );
     REQUIRE( state->getHitPoint() == 150 );
@@ -40,6 +41,22 @@ TEST_CASE( "Test State class" ) {
         REQUIRE( state->getHitPoint() == 0 );
     }
     
+    SECTION( "State::takeMagicDamage tests" ) {
+        state->takeMagicDamage(50);
+        REQUIRE( state->getHitPoint() == 100 );
+
+        state->takeMagicDamage(40);
+        REQUIRE( state->getHitPoint() == 100-40 );
+
+        state->takeMagicDamage(10);
+        REQUIRE( state->getHitPoint() == 100-40-10 );
+
+        state->takeMagicDamage(10);
+        REQUIRE( state->getHitPoint() == 100-40-10-10 );
+        
+        state->takeMagicDamage(100);
+        REQUIRE( state->getHitPoint() == 0 );
+    }
     
     SECTION( "State::addHP tests" ) {
         state->takeDamage(50);
@@ -54,10 +71,15 @@ TEST_CASE( "Test State class" ) {
         state->addHitPoint(10);
         REQUIRE( state->getHitPoint() == 150 );
     }
+    
+        SECTION( "State::addMP tests" ) {
+        state->addManaPoint(50);
+        REQUIRE( state->getManaPoint() == 100 );
+    }
 }
 
 TEST_CASE( "Test Unit class" ) {
-    Unit* unit = new Unit("Unit", "Alive", 150, 10);
+    Unit* unit = new Unit("Unit", 150, 10);
 
     REQUIRE( unit->getTitle() == "Unit" );
     REQUIRE( unit->getHitPoint() == 150 );
@@ -97,7 +119,7 @@ TEST_CASE( "Test Unit class" ) {
 }
 
 TEST_CASE( "Test Ability class" ) {
-    Unit* unit = new Unit("Unit", "Alive", 150, 10);
+    Unit* unit = new Unit("Unit", 150, 10);
 
     REQUIRE( unit->getTitle() == "Unit" );
     REQUIRE( unit->getHitPoint() == 150 );
@@ -105,7 +127,7 @@ TEST_CASE( "Test Ability class" ) {
     REQUIRE( unit->getDamage() == 10 );
     
     SECTION( "Ability::attack tests" ) {
-        Unit* enemy = new Unit("Enemy", "Alive",150, 10);
+        Unit* enemy = new Unit("Enemy", 150, 10);
         
         REQUIRE( enemy->getTitle() == "Enemy" );
         REQUIRE( enemy->getHitPoint() == 150 );
@@ -200,14 +222,14 @@ TEST_CASE( "Test Soldier class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1000 );
         REQUIRE( enemy->getDamage() == 100 );
 
-        soldier->attack(enemy);
+        soldier->attack(soldier, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 100 );
         REQUIRE( soldier->getHitPoint() == 1000 - 50 );
 
-        soldier->attack(enemy);
-        soldier->attack(enemy);
-        soldier->attack(enemy);
+        soldier->attack(soldier, enemy);
+        soldier->attack(soldier, enemy);
+        soldier->attack(soldier, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 100 - 100 - 100 - 100 );
         REQUIRE( soldier->getHitPoint() == 1000 - 50 - 50 - 50 - 50 );
@@ -217,14 +239,14 @@ TEST_CASE( "Test Soldier class" ) {
         REQUIRE( enemy->getHitPoint() == 1000 - 100 - 100 - 100 - 100 - 60 );
 
         try {
-            soldier->attack(enemy);
+            soldier->attack(soldier, enemy);
         } catch ( OutOfHitPointsException obj ) {
             REQUIRE( enemy->getHitPoint() == 0 );
             REQUIRE( soldier->getHitPoint() == 110 );
         }
 
         try {
-            enemy->attack(soldier);
+            enemy->attack(enemy, soldier);
         } catch ( OutOfHitPointsException obj ) {
             REQUIRE( enemy->getHitPoint() == 0 );
             REQUIRE( soldier->getHitPoint() == 110 );
@@ -239,14 +261,14 @@ TEST_CASE( "Test Soldier class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1000 );
         REQUIRE( enemy->getDamage() == 100 );
 
-        soldier->counterAttack(enemy);
+        soldier->counterAttack(soldier, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 50 );
         REQUIRE( soldier->getHitPoint() == 1000 );
 
-        soldier->attack(enemy);
-        soldier->attack(enemy);
-        soldier->attack(enemy);
+        soldier->attack(soldier, enemy);
+        soldier->attack(soldier, enemy);
+        soldier->attack(soldier, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 50 - 100 - 100 - 100 );
         REQUIRE( soldier->getHitPoint() == 1000 - 50 - 50 - 50 );
@@ -332,14 +354,14 @@ TEST_CASE( "Test Rogue class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1000 );
         REQUIRE( enemy->getDamage() == 100 );
 
-        rogue->attack(enemy);
+        rogue->attack(rogue, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 130 );
         REQUIRE( rogue->getHitPoint() == 700 );
 
-        rogue->attack(enemy);
-        rogue->attack(enemy);
-        rogue->attack(enemy);
+        rogue->attack(rogue, enemy);
+        rogue->attack(rogue, enemy);
+        rogue->attack(rogue, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 130 - 130 - 130 - 130 );
         REQUIRE( rogue->getHitPoint() == 700 );
@@ -353,14 +375,14 @@ TEST_CASE( "Test Rogue class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1000 );
         REQUIRE( enemy->getDamage() == 100 );
 
-        rogue->counterAttack(enemy);
+        rogue->counterAttack(rogue, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 65 );
         REQUIRE( rogue->getHitPoint() == 700 );
 
-        rogue->attack(enemy);
-        rogue->attack(enemy);
-        rogue->attack(enemy);
+        rogue->attack(rogue, enemy);
+        rogue->attack(rogue, enemy);
+        rogue->attack(rogue, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 65 - 130 - 130 - 130 );
         REQUIRE( rogue->getHitPoint() == 700 );
@@ -442,28 +464,28 @@ TEST_CASE( "Test Berserker class" ) {
         REQUIRE( enemyrogue->getHitPointLimit() == 700 );
         REQUIRE( enemyrogue->getDamage() == 130 );
 
-        berserker->attack(enemy);
+        berserker->attack(berserker, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 150 );
         REQUIRE( berserker->getHitPoint() == 800 - 50 );
 
-        berserker->attack(enemy);
-        berserker->attack(enemy);
-        berserker->attack(enemy);
+        berserker->attack(berserker, enemy);
+        berserker->attack(berserker, enemy);
+        berserker->attack(berserker, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 150 - 150 - 150 - 150 );
         REQUIRE( berserker->getHitPoint() == 800 - 50 - 50 - 50 - 50 );
         
         berserker->addHitPoint(1000);
 
-        enemyrogue->attack(berserker);
+        enemyrogue->attack(enemyrogue, berserker);
 
         REQUIRE( enemyrogue->getHitPoint() == 700 );
         REQUIRE( berserker->getHitPoint() == 800 - 130 );
 
-        enemyrogue->attack(berserker);
-        enemyrogue->attack(berserker);
-        enemyrogue->attack(berserker);
+        enemyrogue->attack(enemyrogue, berserker);
+        enemyrogue->attack(enemyrogue, berserker);
+        enemyrogue->attack(enemyrogue, berserker);
 
         REQUIRE( enemyrogue->getHitPoint() == 700 );
         REQUIRE( berserker->getHitPoint() == 800 - 130 - 130 - 130 - 130 );
@@ -477,14 +499,14 @@ TEST_CASE( "Test Berserker class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1000 );
         REQUIRE( enemy->getDamage() == 100 );
 
-        berserker->counterAttack(enemy);
+        berserker->counterAttack(berserker, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 75 );
         REQUIRE( berserker->getHitPoint() == 800 );
 
-        berserker->attack(enemy);
-        berserker->attack(enemy);
-        berserker->attack(enemy);
+        berserker->attack(berserker, enemy);
+        berserker->attack(berserker, enemy);
+        berserker->attack(berserker, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 75 - 150 - 150 - 150 );
         REQUIRE( berserker->getHitPoint() == 800 - 50 - 50 - 50 );
@@ -557,22 +579,24 @@ TEST_CASE( "Test Vampire class" ) {
     SECTION( "Vampire::attack tests" ) {
         Soldier* enemy = new Soldier("Enemy");
 
+        REQUIRE( vampire->getIsVampire() == true );
         REQUIRE( enemy->getTitle() == "Enemy" );
         REQUIRE( enemy->getHitPoint() == 1000 );
         REQUIRE( enemy->getHitPointLimit() == 1000 );
         REQUIRE( enemy->getDamage() == 100 );
         
         vampire->takeDamage(50);
-        vampire->attack(enemy);
-
-        REQUIRE( enemy->getHitPoint() == 1000 - 80 );
+        vampire->attack(vampire, enemy);
+        
+        REQUIRE( enemy->getIsVampire() == true );
+        REQUIRE( enemy->getHitPoint() == 1000 - 80 + 20);
         REQUIRE( vampire->getHitPoint() == 1200 - 50 - 50 + 20 );
 
-        vampire->attack(enemy);
-        vampire->attack(enemy);
-        vampire->attack(enemy);
+        vampire->attack(vampire, enemy);
+        vampire->attack(vampire, enemy);
+        vampire->attack(vampire, enemy);
 
-        REQUIRE( enemy->getHitPoint() == 1000 - 80 - 80 - 80 - 80 );
+        REQUIRE( enemy->getHitPoint() == 1000 - 80 - 80 - 80);
         REQUIRE( vampire->getHitPoint() == 1200 - 50 - 50 + 20 - 50 + 20 - 50 + 20 - 50 + 20);
     }
     
@@ -585,7 +609,7 @@ TEST_CASE( "Test Vampire class" ) {
         REQUIRE( enemy->getDamage() == 100 );
         
         vampire->takeDamage(100);
-        vampire->counterAttack(enemy);
+        vampire->counterAttack(vampire, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 40 );
         REQUIRE( vampire->getHitPoint() == 1200 - 100 + 20 );
@@ -664,7 +688,7 @@ TEST_CASE( "Test Werewolf class" ) {
     
     SECTION( "Werewolf::transform tests" ) {
         
-        werewolf->transform();
+        werewolf->transformInToWolf();
         REQUIRE( werewolf->getTitle() == "Wolf" );
         REQUIRE( werewolf->getHitPoint() == 900 );
         REQUIRE( werewolf->getHitPointLimit() == 1300 );
@@ -705,10 +729,33 @@ TEST_CASE( "Test Werewolf class" ) {
         werewolf->takeMagicDamage(50);
         REQUIRE( werewolf->getHitPoint() == 900 - 50 - 50 - 150);
     }
+    
+    SECTION( "Werewolf::attack tests" ) {
+        Soldier* enemy = new Soldier("Enemy");
+
+        REQUIRE( werewolf->getIsWerewolf() == true );
+        REQUIRE( enemy->getTitle() == "Enemy" );
+        REQUIRE( enemy->getHitPoint() == 1000 );
+        REQUIRE( enemy->getHitPointLimit() == 1000 );
+        REQUIRE( enemy->getDamage() == 100 );
+        
+        werewolf->attack(werewolf, enemy);
+        
+        REQUIRE( enemy->getIsWerewolf() == true );
+        REQUIRE( enemy->getHitPoint() == 1000 - 100);
+        REQUIRE( werewolf->getHitPoint() == 900 - 50);
+
+        enemy->transformInToWolf();
+        REQUIRE( enemy->getTitle() == "Wolf" );
+        REQUIRE( enemy->getHitPoint() == 900 );
+        REQUIRE( enemy->getHitPointLimit() == 1300 );
+        REQUIRE( enemy->getDamage() == 200 );
+    }
+    
 }
 
 TEST_CASE( "Test SpellCaster class" ) {
-    SpellCaster* spellCaster = new SpellCaster("SpellCaster", "Alive",1000, 100, 1000, "Healer");
+    SpellCaster* spellCaster = new SpellCaster("SpellCaster",1000, 100, 1000, false);
 
     REQUIRE( spellCaster->getTitle() == "SpellCaster" );
     REQUIRE( spellCaster->getHitPoint() == 1000 );
@@ -716,7 +763,6 @@ TEST_CASE( "Test SpellCaster class" ) {
     REQUIRE( spellCaster->getDamage() == 100 );
     REQUIRE( spellCaster->getManaPoint() == 1000 );
     REQUIRE( spellCaster->getManaPointLimit() == 1000 );
-    REQUIRE( spellCaster->getMagicType() == "Healer" );
     
     SECTION( "SpellCaster::takeDamage tests" ) {
         int damage = 10;
@@ -785,14 +831,14 @@ TEST_CASE( "Test SpellCaster class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1000 );
         REQUIRE( enemy->getDamage() == 100 );
 
-        spellCaster->attack(enemy);
+        spellCaster->attack(spellCaster, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 100 );
         REQUIRE( spellCaster->getHitPoint() == 1000 - 50 );
 
-        spellCaster->attack(enemy);
-        spellCaster->attack(enemy);
-        spellCaster->attack(enemy);
+        spellCaster->attack(spellCaster, enemy);
+        spellCaster->attack(spellCaster, enemy);
+        spellCaster->attack(spellCaster, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 100 - 100 - 100 - 100 );
         REQUIRE( spellCaster->getHitPoint() == 1000 - 50 - 50 - 50 - 50 );
@@ -802,14 +848,14 @@ TEST_CASE( "Test SpellCaster class" ) {
         REQUIRE( enemy->getHitPoint() == 1000 - 100 - 100 - 100 - 100 - 60 );
 
         try {
-            spellCaster->attack(enemy);
+            spellCaster->attack(spellCaster, enemy);
         } catch ( OutOfHitPointsException obj ) {
             REQUIRE( enemy->getHitPoint() == 0 );
             REQUIRE( spellCaster->getHitPoint() == 110 );
         }
 
         try {
-            enemy->attack(spellCaster);
+            enemy->attack(spellCaster, spellCaster);
         } catch ( OutOfHitPointsException obj ) {
             REQUIRE( enemy->getHitPoint() == 0 );
             REQUIRE( spellCaster->getHitPoint() == 110 );
@@ -824,14 +870,14 @@ TEST_CASE( "Test SpellCaster class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1000 );
         REQUIRE( enemy->getDamage() == 100 );
 
-        spellCaster->counterAttack(enemy);
+        spellCaster->counterAttack(spellCaster, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 50 );
         REQUIRE( spellCaster->getHitPoint() == 1000 );
 
-        spellCaster->attack(enemy);
-        spellCaster->attack(enemy);
-        spellCaster->attack(enemy);
+        spellCaster->attack(spellCaster, enemy);
+        spellCaster->attack(spellCaster, enemy);
+        spellCaster->attack(spellCaster, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 50 - 100 - 100 - 100 );
         REQUIRE( spellCaster->getHitPoint() == 1000 - 50 - 50 - 50 );
@@ -859,19 +905,28 @@ TEST_CASE( "Test SpellCaster class" ) {
         spellCaster->addManaPoint(50);
         REQUIRE( spellCaster->getManaPoint() == 550 );
     }
+    
+    SECTION( "SpellCaster::spell tests" ) {
+        Soldier* enemy = new Soldier("Enemy");
+        
+        spellCaster->castSpell(enemy, VORTEX);
+        REQUIRE( spellCaster->getManaPoint() == 1000 - 50);
+        REQUIRE( enemy->getHitPoint() == 1000 - 100);
+        spellCaster->castSpell(enemy, BATTLEHEAL);
+        REQUIRE( spellCaster->getManaPoint() == 1000 - 80);
+        REQUIRE( enemy->getHitPoint() == 1000);
+    }
 }
 
 TEST_CASE( "Wizard class" ) {
     Wizard* wizard = new Wizard("Wizard");
 
     REQUIRE( wizard->getTitle() == "Wizard" );
-    REQUIRE( wizard->getUnitType() == "Alive" );
     REQUIRE( wizard->getHitPoint() == 600 );
     REQUIRE( wizard->getHitPointLimit() == 600 );
     REQUIRE( wizard->getDamage() == 50 );
     REQUIRE( wizard->getManaPoint() == 500 );
     REQUIRE( wizard->getManaPointLimit() == 500 );
-    REQUIRE( wizard->getMagicType() == "Magician" );
     
     SECTION( "Wizard::takeDamage tests" ) {
         int damage = 10;
@@ -940,27 +995,27 @@ TEST_CASE( "Wizard class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1000 );
         REQUIRE( enemy->getDamage() == 100 );
 
-        wizard->attack(enemy);
+        wizard->attack(wizard, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 50 );
         REQUIRE( wizard->getHitPoint() == 600 - 50 );
 
-        wizard->attack(enemy);
-        wizard->attack(enemy);
-        wizard->attack(enemy);
+        wizard->attack(wizard, enemy);
+        wizard->attack(wizard, enemy);
+        wizard->attack(wizard, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 50 - 50 - 50 - 50 );
         REQUIRE( wizard->getHitPoint() == 600 - 50 - 50 - 50 - 50 );
 
         try {
-            wizard->attack(enemy);
+            wizard->attack(wizard, enemy);
         } catch ( OutOfHitPointsException obj ) {
             REQUIRE( enemy->getHitPoint() == 0 );
             REQUIRE( wizard->getHitPoint() == 110 );
         }
 
         try {
-            enemy->attack(wizard);
+            enemy->attack(enemy, wizard);
         } catch ( OutOfHitPointsException obj ) {
             REQUIRE( enemy->getHitPoint() == 0 );
             REQUIRE( wizard->getHitPoint() == 110 );
@@ -975,14 +1030,14 @@ TEST_CASE( "Wizard class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1000 );
         REQUIRE( enemy->getDamage() == 100 );
 
-        wizard->counterAttack(enemy);
+        wizard->counterAttack(wizard, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 25 );
         REQUIRE( wizard->getHitPoint() == 600 );
 
-        wizard->attack(enemy);
-        wizard->attack(enemy);
-        wizard->attack(enemy);
+        wizard->attack(wizard, enemy);
+        wizard->attack(wizard, enemy);
+        wizard->attack(wizard, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 25 - 50 - 50 - 50 );
         REQUIRE( wizard->getHitPoint() == 600 - 50 - 50 - 50 );
@@ -1017,31 +1072,31 @@ TEST_CASE( "Wizard class" ) {
         
         dude->takeDamage(200);
         REQUIRE( dude->getHitPoint() == 1000 - 200 );
-        wizard->heal(dude);
+        wizard->castSpell(dude, BATTLEHEAL);
         REQUIRE( dude->getHitPoint() == 1000 - 200 + 50);
         REQUIRE( wizard->getManaPoint() == 500 - 30 );
-        wizard->heal(dude);
-        wizard->heal(dude);
-        wizard->heal(dude);
-        wizard->heal(dude);
+        wizard->castSpell(dude, BATTLEHEAL);
+        wizard->castSpell(dude, BATTLEHEAL);
+        wizard->castSpell(dude, BATTLEHEAL);
+        wizard->castSpell(dude, BATTLEHEAL);
         REQUIRE( dude->getHitPoint() == 1000);
         REQUIRE( wizard->getManaPoint() == 500 - 30 - 60 - 60);
         dude->takeDamage(100);
         wizard->spendMana(480);
-        wizard->heal(dude);
+        wizard->castSpell(dude, BATTLEHEAL);
         REQUIRE( dude->getHitPoint() == 900);
    }
     
     SECTION( "Wizard::magic damage tests" ) {
         Soldier* enemy = new Soldier("Enemy");
         
-        wizard->useBattleSpell(enemy);
+        wizard->castSpell(enemy, VORTEX);
         REQUIRE( enemy->getHitPoint() == 1000 - 200);
         REQUIRE( wizard->getManaPoint() == 500 - 50 );
-        wizard->useBattleSpell(enemy);
-        wizard->useBattleSpell(enemy);
-        wizard->useBattleSpell(enemy);
-        wizard->useBattleSpell(enemy);
+        wizard->castSpell(enemy, VORTEX);
+        wizard->castSpell(enemy, VORTEX);
+        wizard->castSpell(enemy, VORTEX);
+        wizard->castSpell(enemy, VORTEX);
         REQUIRE( enemy->getHitPoint() == 0);
         REQUIRE( wizard->getManaPoint() == 500 - 50 - 100 - 100);
         wizard->addHitPoint(100);
@@ -1053,13 +1108,11 @@ TEST_CASE( "Healer class" ) {
     Healer* healer = new Healer("Healer");
 
     REQUIRE( healer->getTitle() == "Healer" );
-    REQUIRE( healer->getUnitType() == "Alive" );
     REQUIRE( healer->getHitPoint() == 600 );
     REQUIRE( healer->getHitPointLimit() == 600 );
     REQUIRE( healer->getDamage() == 30 );
     REQUIRE( healer->getManaPoint() == 500 );
     REQUIRE( healer->getManaPointLimit() == 500 );
-    REQUIRE( healer->getMagicType() == "Healer" );
     
     SECTION( "Healer::takeDamage tests" ) {
         int damage = 10;
@@ -1128,31 +1181,17 @@ TEST_CASE( "Healer class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1000 );
         REQUIRE( enemy->getDamage() == 100 );
 
-        healer->attack(enemy);
+        healer->attack(healer, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 30 );
         REQUIRE( healer->getHitPoint() == 600 - 50 );
 
-        healer->attack(enemy);
-        healer->attack(enemy);
-        healer->attack(enemy);
+        healer->attack(healer, enemy);
+        healer->attack(healer, enemy);
+        healer->attack(healer, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 30 - 30 - 30 - 30 );
         REQUIRE( healer->getHitPoint() == 600 - 50 - 50 - 50 - 50 );
-
-        try {
-            healer->attack(enemy);
-        } catch ( OutOfHitPointsException obj ) {
-            REQUIRE( enemy->getHitPoint() == 0 );
-            REQUIRE( healer->getHitPoint() == 110 );
-        }
-
-        try {
-            enemy->attack(healer);
-        } catch ( OutOfHitPointsException obj ) {
-            REQUIRE( enemy->getHitPoint() == 0 );
-            REQUIRE( healer->getHitPoint() == 110 );
-        }
     }
     
     SECTION( "Healer::counter attack tests" ) {
@@ -1163,14 +1202,14 @@ TEST_CASE( "Healer class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1000 );
         REQUIRE( enemy->getDamage() == 100 );
 
-        healer->counterAttack(enemy);
+        healer->counterAttack(healer, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 15 );
         REQUIRE( healer->getHitPoint() == 600 );
 
-        healer->attack(enemy);
-        healer->attack(enemy);
-        healer->attack(enemy);
+        healer->attack(healer, enemy);
+        healer->attack(healer, enemy);
+        healer->attack(healer, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 15 - 30 - 30 - 30 );
         REQUIRE( healer->getHitPoint() == 600 - 50 - 50 - 50 );
@@ -1205,29 +1244,29 @@ TEST_CASE( "Healer class" ) {
         
         dude->takeDamage(200);
         REQUIRE( dude->getHitPoint() == 1000 - 200 );
-        healer->heal(dude);
+        healer->castSpell(dude, BATTLEHEAL);
         REQUIRE( dude->getHitPoint() == 1000 - 200 + 100);
         REQUIRE( healer->getManaPoint() == 500 - 30 );
-        healer->heal(dude);
-        healer->heal(dude);
+        healer->castSpell(dude, BATTLEHEAL);
+        healer->castSpell(dude, BATTLEHEAL);
         REQUIRE( dude->getHitPoint() == 1000);
         REQUIRE( healer->getManaPoint() == 500 - 30 - 60);
         dude->takeDamage(100);
         healer->spendMana(480);
-        healer->heal(dude);
+        healer->castSpell(dude, BATTLEHEAL);
         REQUIRE( dude->getHitPoint() == 900);
    }
     
     SECTION( "Healer::magic damage tests" ) {
         Soldier* enemy = new Soldier("Enemy");
         
-        healer->useBattleSpell(enemy);
+        healer->castSpell(enemy, VORTEX);
         REQUIRE( enemy->getHitPoint() == 1000 - 100);
         REQUIRE( healer->getManaPoint() == 500 - 50 );
-        healer->useBattleSpell(enemy);
-        healer->useBattleSpell(enemy);
-        healer->useBattleSpell(enemy);
-        healer->useBattleSpell(enemy);
+        healer->castSpell(enemy, VORTEX);
+        healer->castSpell(enemy, VORTEX);
+        healer->castSpell(enemy, VORTEX);
+        healer->castSpell(enemy, VORTEX);
         REQUIRE( enemy->getHitPoint() == 500);
         REQUIRE( healer->getManaPoint() == 500 - 50 - 100 - 100);
         healer->addHitPoint(100);
@@ -1239,13 +1278,11 @@ TEST_CASE( "Priest class" ) {
     Priest* priest = new Priest("Priest");
 
     REQUIRE( priest->getTitle() == "Priest" );
-    REQUIRE( priest->getUnitType() == "Alive" );
     REQUIRE( priest->getHitPoint() == 700 );
     REQUIRE( priest->getHitPointLimit() == 700 );
     REQUIRE( priest->getDamage() == 40 );
     REQUIRE( priest->getManaPoint() == 500 );
     REQUIRE( priest->getManaPointLimit() == 500 );
-    REQUIRE( priest->getMagicType() == "Priest" );
     
     SECTION( "Priest::takeDamage tests" ) {
         int damage = 10;
@@ -1314,27 +1351,27 @@ TEST_CASE( "Priest class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1000 );
         REQUIRE( enemy->getDamage() == 100 );
 
-        priest->attack(enemy);
+        priest->attack(priest, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 40 );
         REQUIRE( priest->getHitPoint() == 700 - 50 );
 
-        priest->attack(enemy);
-        priest->attack(enemy);
-        priest->attack(enemy);
+        priest->attack(priest, enemy);
+        priest->attack(priest, enemy);
+        priest->attack(priest, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 40 - 40 - 40 - 40 );
         REQUIRE( priest->getHitPoint() == 700 - 50 - 50 - 50 - 50 );
 
         try {
-            priest->attack(enemy);
+            priest->attack(priest, enemy);
         } catch ( OutOfHitPointsException obj ) {
             REQUIRE( enemy->getHitPoint() == 0 );
             REQUIRE( priest->getHitPoint() == 110 );
         }
 
         try {
-            enemy->attack(priest);
+            enemy->attack(enemy, priest);
         } catch ( OutOfHitPointsException obj ) {
             REQUIRE( enemy->getHitPoint() == 0 );
             REQUIRE( priest->getHitPoint() == 110 );
@@ -1349,14 +1386,14 @@ TEST_CASE( "Priest class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1000 );
         REQUIRE( enemy->getDamage() == 100 );
 
-        priest->counterAttack(enemy);
+        priest->counterAttack(priest, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 20 );
         REQUIRE( priest->getHitPoint() == 700 );
 
-        priest->attack(enemy);
-        priest->attack(enemy);
-        priest->attack(enemy);
+        priest->attack(priest, enemy);
+        priest->attack(priest, enemy);
+        priest->attack(priest, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1000 - 20 - 40 - 40 - 40 );
         REQUIRE( priest->getHitPoint() == 700 - 50 - 50 - 50 );
@@ -1391,29 +1428,29 @@ TEST_CASE( "Priest class" ) {
         
         dude->takeDamage(200);
         REQUIRE( dude->getHitPoint() == 1000 - 200 );
-        priest->heal(dude);
+        priest->castSpell(dude, BATTLEHEAL);
         REQUIRE( dude->getHitPoint() == 1000 - 200 + 100);
         REQUIRE( priest->getManaPoint() == 500 - 30 );
-        priest->heal(dude);
-        priest->heal(dude);
+        priest->castSpell(dude, BATTLEHEAL);
+        priest->castSpell(dude, BATTLEHEAL);
         REQUIRE( dude->getHitPoint() == 1000);
         REQUIRE( priest->getManaPoint() == 500 - 30 - 60);
         dude->takeDamage(100);
         priest->spendMana(480);
-        priest->heal(dude);
+        priest->castSpell(dude, BATTLEHEAL);
         REQUIRE( dude->getHitPoint() == 900);
    }
     
     SECTION( "Priest::magic damage tests" ) {
         Soldier* enemy = new Soldier("Enemy");
         
-        priest->useBattleSpell(enemy);
+        priest->castSpell(enemy, VORTEX);
         REQUIRE( enemy->getHitPoint() == 1000 - 100);
         REQUIRE( priest->getManaPoint() == 500 - 50 );
-        priest->useBattleSpell(enemy);
-        priest->useBattleSpell(enemy);
-        priest->useBattleSpell(enemy);
-        priest->useBattleSpell(enemy);
+        priest->castSpell(enemy, VORTEX);
+        priest->castSpell(enemy, VORTEX);
+        priest->castSpell(enemy, VORTEX);
+        priest->castSpell(enemy, VORTEX);
         REQUIRE( enemy->getHitPoint() == 500);
         REQUIRE( priest->getManaPoint() == 500 - 50 - 100 - 100);
         priest->addHitPoint(100);
@@ -1428,17 +1465,18 @@ TEST_CASE( "Priest class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1200 );
         REQUIRE( enemy->getDamage() == 80 );
 
-        priest->attack(enemy);
+        priest->attack(priest, enemy);
+        REQUIRE( priest->getIsVampire() == true );
 
         REQUIRE( enemy->getHitPoint() == 1200 - 80 + 20 );
         REQUIRE( priest->getHitPoint() == 700 - 40 );
 
-        priest->attack(enemy);
-        priest->attack(enemy);
-        priest->attack(enemy);
+        priest->attack(priest, enemy);
+        priest->attack(priest, enemy);
+        priest->attack(priest, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1200 - 80 - 80 - 80 - 80 + 80);
-        REQUIRE( priest->getHitPoint() == 700 - 40 - 40 - 40 - 40 );
+        REQUIRE( priest->getHitPoint() == 700 - 40 - 40 - 40 - 40 + 60);
     }
     
     SECTION( "Priest::counter attack tests" ) {
@@ -1449,35 +1487,450 @@ TEST_CASE( "Priest class" ) {
         REQUIRE( enemy->getHitPointLimit() == 1200 );
         REQUIRE( enemy->getDamage() == 80 );
 
-        priest->counterAttack(enemy);
+        priest->counterAttack(priest, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1200 - 40 );
         REQUIRE( priest->getHitPoint() == 700 );
 
-        priest->attack(enemy);
-        priest->attack(enemy);
-        priest->attack(enemy);
+        priest->attack(priest, enemy);
+        priest->attack(priest, enemy);
+        priest->attack(priest, enemy);
 
         REQUIRE( enemy->getHitPoint() == 1200 - 40 - 80 - 80 - 80 + 60);
-        REQUIRE( priest->getHitPoint() == 700 - 40 - 40 - 40 );
-
-        priest->takeDamage(6000);
-
-        REQUIRE( priest->getHitPoint() == 0 );
+        REQUIRE( priest->getHitPoint() == 700 - 40 - 40 - 40 + 40);
     }
     
     SECTION( "Priest::damage undead tests" ) {
         Vampire* enemy = new Vampire("Enemy");
         
-        priest->useBattleSpell(enemy);
+        priest->castSpell(enemy, VORTEX);
         REQUIRE( enemy->getHitPoint() == 1200 - 200);
         REQUIRE( priest->getManaPoint() == 500 - 50 );
-        priest->useBattleSpell(enemy);
-        priest->useBattleSpell(enemy);
-        priest->useBattleSpell(enemy);
-        priest->useBattleSpell(enemy);
+        priest->castSpell(enemy, VORTEX);
+        priest->castSpell(enemy, VORTEX);
+        priest->castSpell(enemy, VORTEX);
+        priest->castSpell(enemy, VORTEX);
         REQUIRE( enemy->getHitPoint() == 200);
-        priest->useBattleSpell(enemy);
+        priest->castSpell(enemy, VORTEX);
         REQUIRE( priest->getManaPoint() == 500 - 50 - 100 - 100 - 50);
     }
 }
+
+TEST_CASE( "Warlock class" ) {
+    Warlock* warlock = new Warlock("Warlock");
+
+    REQUIRE( warlock->getTitle() == "Warlock" );
+    REQUIRE( warlock->getHitPoint() == 600 );
+    REQUIRE( warlock->getHitPointLimit() == 600 );
+    REQUIRE( warlock->getDamage() == 30 );
+    REQUIRE( warlock->getManaPoint() == 500 );
+    REQUIRE( warlock->getManaPointLimit() == 500 );
+    
+    SECTION( "Warlock::takeDamage tests" ) {
+        int damage = 10;
+        int iterations = warlock->getHitPoint() / damage;
+
+        for ( int i = 1; i <= iterations; i++ ) {
+            warlock->takeDamage(damage);
+            int expectedHP = warlock->getHitPointLimit() - damage * i;
+            REQUIRE( warlock->getHitPoint() == expectedHP );
+        }
+
+        try {
+            warlock->takeDamage(damage);
+        } catch ( OutOfHitPointsException obj ) {
+            REQUIRE( warlock->getHitPoint() == 0 );
+        }
+
+        try {
+            warlock->addHitPoint(damage);
+        } catch ( OutOfHitPointsException obj ) {
+            REQUIRE( warlock->getHitPoint() == 0 );
+        }
+    }
+    
+    SECTION( "Warlock::takeMagicDamage tests" ) {
+        int damage = 10;
+        int iterations = warlock->getHitPoint() / damage;
+
+        for ( int i = 1; i <= iterations; i++ ) {
+            warlock->takeMagicDamage(damage);
+            int expectedHP = warlock->getHitPointLimit() - damage * i;
+            REQUIRE( warlock->getHitPoint() == expectedHP );
+        }
+
+        try {
+            warlock->takeMagicDamage(damage);
+        } catch ( OutOfHitPointsException obj ) {
+            REQUIRE( warlock->getHitPoint() == 0 );
+        }
+
+        try {
+            warlock->addHitPoint(damage);
+        } catch ( OutOfHitPointsException obj ) {
+            REQUIRE( warlock->getHitPoint() == 0 );
+        }
+    }
+    SECTION( "Warlock::addHitPoint tests" ) {
+        warlock->takeDamage(50);
+        REQUIRE( warlock->getHitPoint() == 550 );
+
+        warlock->addHitPoint(40);
+        REQUIRE( warlock->getHitPoint() == 590 );
+
+        warlock->addHitPoint(10);
+        REQUIRE( warlock->getHitPoint() == 600 );
+
+        warlock->addHitPoint(10);
+        REQUIRE( warlock->getHitPoint() == 600 );
+    }
+    
+    SECTION( "Warlock::attack tests" ) {
+        Soldier* enemy = new Soldier("Enemy");
+
+        REQUIRE( enemy->getTitle() == "Enemy" );
+        REQUIRE( enemy->getHitPoint() == 1000 );
+        REQUIRE( enemy->getHitPointLimit() == 1000 );
+        REQUIRE( enemy->getDamage() == 100 );
+
+        warlock->attack(warlock, enemy);
+
+        REQUIRE( enemy->getHitPoint() == 1000 - 30 );
+        REQUIRE( warlock->getHitPoint() == 600 - 50 );
+
+        warlock->attack(warlock, enemy);
+        warlock->attack(warlock, enemy);
+        warlock->attack(warlock, enemy);
+
+        REQUIRE( enemy->getHitPoint() == 1000 - 30 - 30 - 30 - 30 );
+        REQUIRE( warlock->getHitPoint() == 600 - 50 - 50 - 50 - 50 );
+
+        try {
+            warlock->attack(warlock, enemy);
+        } catch ( OutOfHitPointsException obj ) {
+            REQUIRE( enemy->getHitPoint() == 0 );
+            REQUIRE( warlock->getHitPoint() == 110 );
+        }
+
+        try {
+            enemy->attack(enemy, warlock);
+        } catch ( OutOfHitPointsException obj ) {
+            REQUIRE( enemy->getHitPoint() == 0 );
+            REQUIRE( warlock->getHitPoint() == 110 );
+        }
+    }
+    
+    SECTION( "Warlock::counter attack tests" ) {
+        Soldier* enemy = new Soldier("Enemy");
+
+        REQUIRE( enemy->getTitle() == "Enemy" );
+        REQUIRE( enemy->getHitPoint() == 1000 );
+        REQUIRE( enemy->getHitPointLimit() == 1000 );
+        REQUIRE( enemy->getDamage() == 100 );
+
+        warlock->counterAttack(warlock, enemy);
+
+        REQUIRE( enemy->getHitPoint() == 1000 - 15 );
+        REQUIRE( warlock->getHitPoint() == 600 );
+
+        warlock->attack(warlock, enemy);
+        warlock->attack(warlock, enemy);
+        warlock->attack(warlock, enemy);
+
+        REQUIRE( enemy->getHitPoint() == 1000 - 15 - 30 - 30 - 30 );
+        REQUIRE( warlock->getHitPoint() == 600 - 50 - 50 - 50 );
+
+        warlock->takeDamage(6000);
+
+        REQUIRE( warlock->getHitPoint() == 0 );
+    }
+    
+    SECTION( "Warlock::spend mana tests" ) {
+        warlock->spendMana(50);
+        REQUIRE( warlock->getManaPoint() == 500 - 50 );
+
+        warlock->spendMana(50);
+        warlock->spendMana(50);
+        warlock->spendMana(50);
+
+        REQUIRE( warlock->getManaPoint() == 500 - 50 - 50 - 100 );
+    }
+    
+    SECTION( "Warlock::add mana tests" ) {
+        warlock->spendMana(200);
+        REQUIRE( warlock->getManaPoint() == 500 - 200 );
+        warlock->addManaPoint(50);
+        REQUIRE( warlock->getManaPoint() == 350 );
+        warlock->addManaPoint(500);
+        REQUIRE( warlock->getManaPoint() == 500 );
+    }
+
+    SECTION( "Warlock::heal tests" ) {
+        Soldier* dude = new Soldier("Dude");
+        
+        dude->takeDamage(200);
+        REQUIRE( dude->getHitPoint() == 1000 - 200 );
+        warlock->castSpell(dude, BATTLEHEAL);
+        REQUIRE( dude->getHitPoint() == 1000 - 200 + 50);
+        REQUIRE( warlock->getManaPoint() == 500 - 30 );
+        warlock->castSpell(dude, BATTLEHEAL);
+        warlock->castSpell(dude, BATTLEHEAL);
+        warlock->castSpell(dude, BATTLEHEAL);
+        warlock->castSpell(dude, BATTLEHEAL);
+        REQUIRE( dude->getHitPoint() == 1000);
+        REQUIRE( warlock->getManaPoint() == 500 - 30 - 60 - 60);
+        dude->takeDamage(100);
+        warlock->spendMana(480);
+        warlock->castSpell(dude, BATTLEHEAL);
+        REQUIRE( dude->getHitPoint() == 900);
+   }
+    
+    SECTION( "Warlock::magic damage tests" ) {
+        Soldier* enemy = new Soldier("Enemy");
+        
+        warlock->castSpell(enemy, VORTEX);
+        REQUIRE( enemy->getHitPoint() == 1000 - 200);
+        REQUIRE( warlock->getManaPoint() == 500 - 50 );
+        warlock->castSpell(enemy, VORTEX);
+        warlock->castSpell(enemy, VORTEX);
+        warlock->castSpell(enemy, VORTEX);
+        warlock->castSpell(enemy, VORTEX);
+        REQUIRE( enemy->getHitPoint() == 0);
+        REQUIRE( warlock->getManaPoint() == 500 - 50 - 100 - 100);
+        warlock->addHitPoint(100);
+        REQUIRE( warlock->getHitPoint() == 600);
+    }
+    
+    SECTION( "Warlock::demon damage tests" ) {
+        Demon* demon = warlock->summonDemon();
+        
+        REQUIRE( demon->getTitle() == "Demon" );
+        REQUIRE( demon->getHitPoint() == 900 );
+        REQUIRE( demon->getHitPointLimit() == 900 );
+        REQUIRE( demon->getDamage() == 150 );
+        
+        Soldier* enemy = new Soldier("Enemy");
+
+        REQUIRE( enemy->getTitle() == "Enemy" );
+        REQUIRE( enemy->getHitPoint() == 1000 );
+        REQUIRE( enemy->getHitPointLimit() == 1000 );
+        REQUIRE( enemy->getDamage() == 100 );
+
+        demon->attack(demon, enemy);
+
+        REQUIRE( enemy->getHitPoint() == 1000 - 150 );
+        REQUIRE( demon->getHitPoint() == 900 - 50 );
+
+        demon->attack(demon, enemy);
+        demon->attack(demon, enemy);
+        demon->attack(demon, enemy);
+
+        REQUIRE( enemy->getHitPoint() == 1000 - 150 - 150 - 150 - 150 );
+        REQUIRE( demon->getHitPoint() == 900 - 50 - 50 - 50 - 50 );
+    }
+}
+
+TEST_CASE( "Necromancer class" ) {
+    Necromancer* necromancer = new Necromancer("Necromancer");
+
+    REQUIRE( necromancer->getTitle() == "Necromancer" );
+    REQUIRE( necromancer->getHitPoint() == 600 );
+    REQUIRE( necromancer->getHitPointLimit() == 600 );
+    REQUIRE( necromancer->getDamage() == 50 );
+    REQUIRE( necromancer->getManaPoint() == 500 );
+    REQUIRE( necromancer->getManaPointLimit() == 500 );
+    
+    SECTION( "Necromancer::takeDamage tests" ) {
+        int damage = 10;
+        int iterations = necromancer->getHitPoint() / damage;
+
+        for ( int i = 1; i <= iterations; i++ ) {
+            necromancer->takeDamage(damage);
+            int expectedHP = necromancer->getHitPointLimit() - damage * i;
+            REQUIRE( necromancer->getHitPoint() == expectedHP );
+        }
+
+        try {
+            necromancer->takeDamage(damage);
+        } catch ( OutOfHitPointsException obj ) {
+            REQUIRE( necromancer->getHitPoint() == 0 );
+        }
+
+        try {
+            necromancer->addHitPoint(damage);
+        } catch ( OutOfHitPointsException obj ) {
+            REQUIRE( necromancer->getHitPoint() == 0 );
+        }
+    }
+    
+    SECTION( "Necromancer::takeMagicDamage tests" ) {
+        int damage = 10;
+        int iterations = necromancer->getHitPoint() / damage;
+
+        for ( int i = 1; i <= iterations; i++ ) {
+            necromancer->takeMagicDamage(damage);
+            int expectedHP = necromancer->getHitPointLimit() - damage * i;
+            REQUIRE( necromancer->getHitPoint() == expectedHP );
+        }
+
+        try {
+            necromancer->takeMagicDamage(damage);
+        } catch ( OutOfHitPointsException obj ) {
+            REQUIRE( necromancer->getHitPoint() == 0 );
+        }
+
+        try {
+            necromancer->addHitPoint(damage);
+        } catch ( OutOfHitPointsException obj ) {
+            REQUIRE( necromancer->getHitPoint() == 0 );
+        }
+    }
+    SECTION( "Necromancer::addHitPoint tests" ) {
+        necromancer->takeDamage(50);
+        REQUIRE( necromancer->getHitPoint() == 550 );
+
+        necromancer->addHitPoint(40);
+        REQUIRE( necromancer->getHitPoint() == 590 );
+
+        necromancer->addHitPoint(10);
+        REQUIRE( necromancer->getHitPoint() == 600 );
+
+        necromancer->addHitPoint(10);
+        REQUIRE( necromancer->getHitPoint() == 600 );
+    }
+    
+    SECTION( "Necromancer::attack tests" ) {
+        Soldier* enemy = new Soldier("Enemy");
+
+        REQUIRE( enemy->getTitle() == "Enemy" );
+        REQUIRE( enemy->getHitPoint() == 1000 );
+        REQUIRE( enemy->getHitPointLimit() == 1000 );
+        REQUIRE( enemy->getDamage() == 100 );
+
+        necromancer->attack(enemy);
+
+        REQUIRE( enemy->getHitPoint() == 1000 - 50 );
+        REQUIRE( necromancer->getHitPoint() == 600 - 50 );
+
+        necromancer->attack(enemy);
+        necromancer->attack(enemy);
+        necromancer->attack(enemy);
+
+        REQUIRE( enemy->getHitPoint() == 1000 - 50 - 50 - 50 - 50 );
+        REQUIRE( necromancer->getHitPoint() == 600 - 50 - 50 - 50 - 50 );
+
+        try {
+            necromancer->attack(enemy);
+        } catch ( OutOfHitPointsException obj ) {
+            REQUIRE( enemy->getHitPoint() == 0 );
+            REQUIRE( necromancer->getHitPoint() == 110 );
+        }
+
+        try {
+            enemy->attack(enemy, necromancer);
+        } catch ( OutOfHitPointsException obj ) {
+            REQUIRE( enemy->getHitPoint() == 0 );
+            REQUIRE( necromancer->getHitPoint() == 110 );
+        }
+    }
+    
+    SECTION( "Necromancer::counter attack tests" ) {
+        Soldier* enemy = new Soldier("Enemy");
+
+        REQUIRE( enemy->getTitle() == "Enemy" );
+        REQUIRE( enemy->getHitPoint() == 1000 );
+        REQUIRE( enemy->getHitPointLimit() == 1000 );
+        REQUIRE( enemy->getDamage() == 100 );
+
+        necromancer->counterAttack(necromancer, enemy);
+
+        REQUIRE( enemy->getHitPoint() == 1000 - 25 );
+        REQUIRE( necromancer->getHitPoint() == 600 );
+
+        necromancer->attack(enemy);
+        necromancer->attack(enemy);
+        necromancer->attack(enemy);
+
+        REQUIRE( enemy->getHitPoint() == 1000 - 25 - 50 - 50 - 50 );
+        REQUIRE( necromancer->getHitPoint() == 600 - 50 - 50 - 50 );
+
+        necromancer->takeDamage(6000);
+
+        REQUIRE( necromancer->getHitPoint() == 0 );
+    }
+    
+    SECTION( "Necromancer::spend mana tests" ) {
+        necromancer->spendMana(50);
+        REQUIRE( necromancer->getManaPoint() == 500 - 50 );
+
+        necromancer->spendMana(50);
+        necromancer->spendMana(50);
+        necromancer->spendMana(50);
+
+        REQUIRE( necromancer->getManaPoint() == 500 - 50 - 50 - 100 );
+    }
+    
+    SECTION( "Necromancer::add mana tests" ) {
+        necromancer->spendMana(200);
+        REQUIRE( necromancer->getManaPoint() == 500 - 200 );
+        necromancer->addManaPoint(50);
+        REQUIRE( necromancer->getManaPoint() == 350 );
+        necromancer->addManaPoint(500);
+        REQUIRE( necromancer->getManaPoint() == 500 );
+    }
+
+    SECTION( "Necromancer::heal tests" ) {
+        Soldier* dude = new Soldier("Dude");
+        
+        dude->takeDamage(200);
+        REQUIRE( dude->getHitPoint() == 1000 - 200 );
+        necromancer->castSpell(dude, BATTLEHEAL);
+        REQUIRE( dude->getHitPoint() == 1000 - 200 + 50);
+        REQUIRE( necromancer->getManaPoint() == 500 - 30 );
+        necromancer->castSpell(dude, BATTLEHEAL);
+        necromancer->castSpell(dude, BATTLEHEAL);
+        necromancer->castSpell(dude, BATTLEHEAL);
+        necromancer->castSpell(dude, BATTLEHEAL);
+        REQUIRE( dude->getHitPoint() == 1000);
+        REQUIRE( necromancer->getManaPoint() == 500 - 30 - 60 - 60);
+        dude->takeDamage(100);
+        necromancer->spendMana(480);
+        necromancer->castSpell(dude, BATTLEHEAL);
+        REQUIRE( dude->getHitPoint() == 900);
+   }
+    
+    SECTION( "Necromancer::magic damage tests" ) {
+        Soldier* enemy = new Soldier("Enemy");
+        
+        necromancer->castSpell(enemy, VORTEX);
+        REQUIRE( enemy->getHitPoint() == 1000 - 200);
+        REQUIRE( necromancer->getManaPoint() == 500 - 50 );
+        necromancer->castSpell(enemy, VORTEX);
+        necromancer->castSpell(enemy, VORTEX);
+        necromancer->castSpell(enemy, VORTEX);
+        necromancer->castSpell(enemy, VORTEX);
+        REQUIRE( enemy->getHitPoint() == 0);
+        REQUIRE( necromancer->getManaPoint() == 500 - 50 - 100 - 100);
+        necromancer->addHitPoint(100);
+        REQUIRE( necromancer->getHitPoint() == 600);
+    }
+    
+        SECTION( "Necromancer:: tests" ) {
+        Soldier* enemy = new Soldier("Enemy");
+        
+        necromancer->castSpell(enemy, VORTEX);
+        necromancer->attack(enemy);
+        necromancer->attack(enemy);
+        REQUIRE( enemy->getHitPoint() == 1000 - 200 - 100);
+        REQUIRE( necromancer->getManaPoint() == 500 - 50 );
+        REQUIRE( necromancer->getHitPoint() == 500);
+        necromancer->castSpell(enemy, VORTEX);
+        necromancer->castSpell(enemy, VORTEX);
+        necromancer->castSpell(enemy, VORTEX);
+        necromancer->castSpell(enemy, VORTEX);
+        REQUIRE( enemy->getHitPoint() == 0);
+        necromancer->update(enemy);
+        REQUIRE( necromancer->getHitPoint() == 550);
+    }
+}
+

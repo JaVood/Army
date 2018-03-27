@@ -1,23 +1,17 @@
 #include "BattleHeal.h"
 
-BattleHeal::BattleHeal(SpellCaster* doctor, Unit* patient) {
-    doctor->ensureIsAlive();
-    patient->ensureIsAlive();
+BattleHeal::BattleHeal(std::string spellName, int manaCost, int actionPoints) : Spell(spellName, actionPoints, manaCost) {}
 
-    this->heal(doctor, patient);
-}
 BattleHeal::~BattleHeal() {}
 
-void BattleHeal::heal(SpellCaster* doctor, Unit* patient) {
-    if ( doctor->getManaPoint() < MANA_BATTLE_HEAL_COST ) {
-        return;
-    }
-    if ( strcmp(doctor->getMagicType(), "Magician") == 0 ) {
-        doctor->spendMana(MANA_BATTLE_HEAL_COST);
-        patient->addHitPoint(HEAL/2);
-        return;
-    }
+void BattleHeal::cast(SpellCaster* caster, Unit* other, Spell* spell) {
+    if ( this->getManaCost() < caster->getManaPoint() ) {
+        caster->spendMana(this->getManaCost());
 
-    doctor->spendMana(MANA_BATTLE_HEAL_COST);
-    patient->addHitPoint(HEAL);
+        if ( caster->getIsBattle() ) {
+            other->addHitPoint(spell->getActionPoints() / 2);
+        } else {
+            other->addHitPoint(spell->getActionPoints());
+        }
+    }
 }

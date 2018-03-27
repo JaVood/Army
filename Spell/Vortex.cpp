@@ -1,30 +1,39 @@
 #include "Vortex.h"
 
-Vortex::Vortex(SpellCaster* wizard, Unit* enemy) {
-    wizard->ensureIsAlive();
-    enemy->ensureIsAlive();
+Vortex::Vortex(std::string spellName, int manaCost, int actionPoints) : Spell(spellName, actionPoints, manaCost) {}
 
-    this->magicAttack(wizard, enemy);
-}
 Vortex::~Vortex() {}
 
-void Vortex::magicAttack(SpellCaster* wizard, Unit* enemy) {
-    if ( wizard->getManaPoint() < MANA_VORTEX_COST ) {
-        return;
-    }
-    
-    if ( strcmp(wizard->getMagicType(), "Priest") == 0 && strcmp(enemy->getUnitType(), "Undead") == 0 ) {
-        wizard->spendMana(MANA_VORTEX_COST);
-        enemy->takeMagicDamage(MAGIC_DAMAGE);
-        return;
-    }
-    
-    if ( strcmp(wizard->getMagicType(), "Healer") == 0 || strcmp(wizard->getMagicType(), "Priest") == 0 ) {
-        wizard->spendMana(MANA_VORTEX_COST);
-        enemy->takeMagicDamage(MAGIC_DAMAGE/2);
-        return;
-    }
+void Vortex::cast(SpellCaster* caster, Unit* enemy, Spell* spell) {
+    if ( this->getManaCost() < caster->getManaPoint() ) {
+        caster->spendMana(this->getManaCost());
+        if ( strcmp(caster->getTitle(), "Priest") == 0 ) {
+            this->priestCast(caster, enemy, spell);
+        } else if ( strcmp(caster->getTitle(), "Necromanser") == 0 ) {
+            this->necromanserCast(caster, enemy, spell);
+        } else {
+            if ( caster->getIsBattle() ) {
+                enemy->takeMagicDamage(spell->getActionPoints());
+            } else {
+                enemy->takeMagicDamage(spell->getActionPoints() / 2);
+                }
+            }
+        }
+}
 
-    wizard->spendMana(MANA_VORTEX_COST);
-    enemy->takeMagicDamage(MAGIC_DAMAGE);
+void Vortex::priestCast(SpellCaster* caster, Unit* enemy, Spell* spell) {
+    if ( this->getManaCost() < caster->getManaPoint() ) {
+        if ( enemy->getIsUndead() ) {
+            enemy->takeMagicDamage(spell->getActionPoints());
+        } else {
+            enemy->takeMagicDamage(spell->getActionPoints() / 2);
+        }
+    }
+}
+
+void Vortex::necromanserCast(SpellCaster* caster, Unit* enemy, Spell* spell) {
+    if ( this->getManaCost() < caster->getManaPoint() ) {
+        enemy->takeMagicDamage(spell->getActionPoints());
+        // caster->addSubject(enemy);
+    }
 }

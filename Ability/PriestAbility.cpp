@@ -3,24 +3,35 @@
 PriestAbility::PriestAbility(Unit* owner): Ability(owner) {}
 PriestAbility::~PriestAbility() {}
 
-void PriestAbility::attack(Unit* enemy) {
+void PriestAbility::attack(Unit* owner, Unit* enemy) {
     this->owner->ensureIsAlive();
     
-    if ( strcmp(enemy->getUnitType(), "Undead") == 0 ) {
-        enemy->takeDamage(this->owner->getDamage()*2);
-        enemy->counterAttack(this->owner);
-        return;
+    if ( owner->getIsVampire() == true ) {
+        owner->addHitPoint(20);
+        owner->turnInVampire(enemy);
     }
-    enemy->takeDamage(this->owner->getDamage());
-    enemy->counterAttack(this->owner);
+    if ( owner->getIsWerewolf() == true ) {
+        owner->turnInWerewolf(enemy);
+    }
+    if ( enemy->getIsUndead() ) {
+        enemy->takeDamage(this->owner->getDamage()*2);
+        enemy->counterAttack(enemy, owner);
+    } else {
+        enemy->takeDamage(this->owner->getDamage());
+        enemy->counterAttack(enemy, owner);
+    }
 }
 
-void PriestAbility::counterAttack(Unit* enemy) {
+void PriestAbility::counterAttack(Unit* owner, Unit* enemy) {
     this->owner->ensureIsAlive();
     
-    if ( strcmp(enemy->getUnitType(), "Undead") == 0 ) {
-        enemy->takeDamage(this->owner->getDamage());
-        return;
+    if ( owner->getIsVampire() == true ) {
+        owner->addHitPoint(20);
+        owner->turnInVampire(enemy);
     }
-    enemy->takeDamage(this->owner->getDamage()/2);
+    if ( enemy->getIsUndead() ) {
+        enemy->takeDamage(this->owner->getDamage());
+    } else {
+        enemy->takeDamage(this->owner->getDamage()/2);
+    }
 }

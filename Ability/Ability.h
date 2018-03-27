@@ -13,9 +13,8 @@ class Ability {
         Ability(Unit* owner);
         virtual ~Ability();
         
-        virtual void attack(Unit* enemy);
-        virtual void counterAttack(Unit* enemy);
-        virtual void hitPointDrain();
+        virtual void attack(Unit* owner, Unit* enemy);
+        virtual void counterAttack(Unit* owner, Unit* enemy);
 };
 
 #endif // ABILITY_H

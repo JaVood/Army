@@ -1,9 +1,7 @@
 #include "State.h"
 
-State::State(const char* title, const char* unitType, int hitPoint, int damage, int manaPoint,  const char* magicType) {
+State::State(const char* title, int hitPoint, int damage, int manaPoint) {
     this->title = title;
-    this->unitType = unitType;
-    this->magicType = magicType;
     this->hitPoint = hitPoint;
     this->manaPoint = manaPoint;
     this->manaPointLimit = manaPoint;
@@ -20,14 +18,6 @@ void State::ensureIsAlive() {
 
 const char* State::getTitle() const {
     return this->title;
-}
-
-const char* State::getUnitType() const {
-    return this->unitType;
-}
-
-const char* State::getMagicType() const {
-    return this->magicType;
 }
 
 int State::getHitPoint() const {
@@ -48,12 +38,6 @@ int State::getManaPointLimit() const {
 
 int State::getDamage() const {
     return this->damage;
-}
-
-void State::spendMana(int mp) {
-    this->ensureIsAlive();
-    
-    this->manaPoint -= mp;
 }
 
 void State::addHitPoint(int hp) {
@@ -78,21 +62,7 @@ void State::addManaPoint(int mp) {
     this->manaPoint = limit;
 }
 
-void State::_takeDamage(int dmg) {
-    this->ensureIsAlive();
-    
-    if ( dmg > this->hitPoint ) {
-        this->hitPoint = 0;
-        return;
-    }
-    this->hitPoint -= dmg;
-}
-
 void State::takeDamage(int dmg) {
-    this->_takeDamage(dmg);
-}
-
-void State::_takeMagicDamage(int dmg) {
     this->ensureIsAlive();
     
     if ( dmg > this->hitPoint ) {
@@ -103,23 +73,21 @@ void State::_takeMagicDamage(int dmg) {
 }
 
 void State::takeMagicDamage(int dmg) {
-    this->_takeMagicDamage(dmg);
+    this->ensureIsAlive();
+    
+    if ( dmg > this->hitPoint ) {
+        this->hitPoint = 0;
+        return;
+    }
+    this->hitPoint -= dmg;
 }
 
 void State::setName(const char* title){
     this->title = title;
 }
 
-void State::setUnitType(const char* unitType){
-    this->unitType = unitType;
-}
-
 void State::setHitPoint(int hp) {
     this->hitPoint = hp;
-}
-
-void State::setManaPoint(int mp) {
-    this->manaPoint = mp;
 }
 
 void State::setDamage(int dmg) {
@@ -133,6 +101,8 @@ void State::setHitPointLimit(int hp) {
     }
 }
 
-void State::setManaPointLimit(int mp) {
-    this->manaPointLimit = mp;
+void State::spendMana(int mp) {
+    this->ensureIsAlive();
+    
+    this->manaPoint -= mp;
 }

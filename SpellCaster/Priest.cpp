@@ -1,15 +1,7 @@
 #include "Priest.h"
 
-Priest::Priest(const char* title, const char* unitType, int hitPoint, int damage, int manaPoint, const char* magicType) : SpellCaster(title, unitType, hitPoint, damage, manaPoint, magicType) {
+Priest::Priest(const char* title, int hitPoint, int damage, int manaPoint) : SpellCaster(title, hitPoint, damage, manaPoint, false) {
     this->ability = new PriestAbility(this);
     }
 
 Priest::~Priest() {}
-
-void Priest::heal(Unit* patient) {
-    this->battleHeal = new BattleHeal(this, patient);
-}
-
-void Priest::useBattleSpell(Unit* enemy) {
-    this->vortex = new Vortex(this, enemy);
-}
